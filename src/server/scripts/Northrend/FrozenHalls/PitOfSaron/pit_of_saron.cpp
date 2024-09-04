@@ -1130,7 +1130,7 @@ public:
             me->LoadCreaturesAddon(true);
             me->SetLootRecipient(nullptr);
             me->ResetPlayerDamageReq();
-            me->UpdateLeashExtensionTime();
+            me->SetLastDamagedTime(0);
         }
     };
 
@@ -1405,7 +1405,7 @@ class spell_pos_rimefang_frost_nova : public SpellScript
             if (Unit* caster = GetCaster())
             {
                 Unit::Kill(caster, target);
-                if (target->IsCreature())
+                if (target->GetTypeId() == TYPEID_UNIT)
                     target->ToCreature()->DespawnOrUnsummon(30000);
             }
     }

@@ -360,7 +360,7 @@ public:
             if (!summoner)
                 return;
 
-            if (!summoner->IsCreature())
+            if (summoner->GetTypeId() != TYPEID_UNIT)
             {
                 return;
             }
@@ -651,7 +651,7 @@ class spell_rotface_large_ooze_combine : public SpellScript
                 if (Creature* rotface = ObjectAccessor::GetCreature(*GetCaster(), instance->GetGuidData(DATA_ROTFACE)))
                     if (rotface->IsAlive())
                     {
-                        if (GetCaster()->IsCreature())
+                        if (GetCaster()->GetTypeId() == TYPEID_UNIT)
                             GetCaster()->ToCreature()->AI()->Talk(EMOTE_UNSTABLE_EXPLOSION);
                         rotface->AI()->Talk(SAY_UNSTABLE_EXPLOSION);
                     }
@@ -708,7 +708,7 @@ class spell_rotface_large_ooze_buff_combine : public SpellScript
                     if (Creature* rotface = ObjectAccessor::GetCreature(*GetCaster(), instance->GetGuidData(DATA_ROTFACE)))
                         if (rotface->IsAlive())
                         {
-                            if (GetCaster()->IsCreature())
+                            if (GetCaster()->GetTypeId() == TYPEID_UNIT)
                                 GetCaster()->ToCreature()->AI()->Talk(EMOTE_UNSTABLE_EXPLOSION);
                             rotface->AI()->Talk(SAY_UNSTABLE_EXPLOSION);
                         }
@@ -792,7 +792,7 @@ class spell_rotface_unstable_ooze_explosion_suicide_aura : public AuraScript
     {
         PreventDefaultAction();
         Unit* target = GetTarget();
-        if (!target->IsCreature())
+        if (target->GetTypeId() != TYPEID_UNIT)
             return;
 
         target->SetVisible(false);

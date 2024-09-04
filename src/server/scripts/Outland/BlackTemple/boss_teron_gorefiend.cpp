@@ -264,7 +264,7 @@ class spell_teron_gorefiend_shadowy_construct : public AuraScript
 
     bool Load() override
     {
-        return GetUnitOwner()->IsCreature();
+        return GetUnitOwner()->GetTypeId() == TYPEID_UNIT;
     }
 
     void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)

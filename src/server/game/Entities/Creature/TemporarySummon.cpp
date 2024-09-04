@@ -254,14 +254,14 @@ void TempSummon::InitSummon()
     WorldObject* owner = GetSummoner();
     if (owner)
     {
-        if (owner->IsCreature())
+        if (owner->GetTypeId() == TYPEID_UNIT)
         {
             if (owner->ToCreature()->IsAIEnabled)
             {
                 owner->ToCreature()->AI()->JustSummoned(this);
             }
         }
-        else if (owner->IsGameObject())
+        else if (owner->GetTypeId() == TYPEID_GAMEOBJECT)
         {
             if (owner->ToGameObject()->AI())
             {
@@ -304,11 +304,11 @@ void TempSummon::UnSummon(uint32 msTime)
 
     if (WorldObject* owner = GetSummoner())
     {
-        if (owner->IsCreature() && owner->ToCreature()->IsAIEnabled)
+        if (owner->GetTypeId() == TYPEID_UNIT && owner->ToCreature()->IsAIEnabled)
         {
             owner->ToCreature()->AI()->SummonedCreatureDespawn(this);
         }
-        else if (owner->IsGameObject() && owner->ToGameObject()->AI())
+        else if (owner->GetTypeId() == TYPEID_GAMEOBJECT && owner->ToGameObject()->AI())
         {
             owner->ToGameObject()->AI()->SummonedCreatureDespawn(this);
         }

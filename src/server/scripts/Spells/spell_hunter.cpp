@@ -671,7 +671,7 @@ class spell_hun_readiness : public SpellScript
         std::set<std::pair<uint32, bool>> spellsToRemove;
         std::set<uint32> categoriesToRemove;
 
-        for (auto const& [spellId, cooldown] : cooldowns)
+        for (const auto& [spellId, cooldown] : cooldowns)
         {
             SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
             if (spellInfo
@@ -689,9 +689,9 @@ class spell_hun_readiness : public SpellScript
         }
 
         // we can't remove spell cooldowns while iterating.
-        for (auto const& [spellId, sendToClient] : spellsToRemove)
+        for (const auto& [spellId, sendToClient] : spellsToRemove)
             caster->RemoveSpellCooldown(spellId, sendToClient);
-        for (auto const& category : categoriesToRemove)
+        for (const auto& category : categoriesToRemove)
             caster->RemoveCategoryCooldown(category);
     }
 
@@ -950,7 +950,7 @@ class spell_hun_tame_beast : public SpellScript
     SpellCastResult CheckCast()
     {
         Unit* caster = GetCaster();
-        if (!caster->IsPlayer())
+        if (caster->GetTypeId() != TYPEID_PLAYER)
             return SPELL_FAILED_DONT_REPORT;
 
         Player* player = GetCaster()->ToPlayer();
@@ -1136,7 +1136,7 @@ class spell_hun_volley_trigger : public SpellScript
         {
             if (Unit* pet = *itr)
             {
-                if (pet->IsAlive() && pet->IsCreature())
+                if (pet->IsAlive() && pet->GetTypeId() == TYPEID_UNIT)
                 {
                     pet->ToCreature()->AI()->OwnerAttacked(_target->ToUnit());
                 }
@@ -1295,7 +1295,7 @@ class spell_hun_bestial_wrath : public SpellScript
     SpellCastResult CheckCast()
     {
         Unit* caster = GetCaster();
-        if (!caster || !caster->IsPlayer())
+        if (!caster || caster->GetTypeId() != TYPEID_PLAYER)
         {
             return SPELL_FAILED_NO_VALID_TARGETS;
         }

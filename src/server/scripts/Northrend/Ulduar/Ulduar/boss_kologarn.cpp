@@ -707,7 +707,7 @@ public:
         if (target == _victim && _me->GetThreatMgr().GetThreatListSize() > 1)
             return true;
 
-        if (!target->IsPlayer())
+        if (target->GetTypeId() != TYPEID_PLAYER)
             return true;
 
         return false;
@@ -724,7 +724,7 @@ class spell_ulduar_stone_grip_cast_target : public SpellScript
 
     bool Load() override
     {
-        if (!GetCaster()->IsCreature())
+        if (GetCaster()->GetTypeId() != TYPEID_UNIT)
             return false;
         return true;
     }

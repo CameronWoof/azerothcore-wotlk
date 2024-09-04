@@ -83,7 +83,6 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
-#include <cmath>
 
 /// @todo: this import is not necessary for compilation and marked as unused by the IDE
 //  however, for some reasons removing it would cause a damn linking issue
@@ -2385,7 +2384,7 @@ void Player::GiveXP(uint32 xp, Unit* victim, float group_rate, bool isLFGReward)
         return;
     }
 
-    if (victim && victim->IsCreature() && !victim->ToCreature()->hasLootRecipient())
+    if (victim && victim->GetTypeId() == TYPEID_UNIT && !victim->ToCreature()->hasLootRecipient())
     {
         return;
     }
@@ -6034,7 +6033,7 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool awar
     // do not reward honor in arenas, but enable onkill spellproc
     if (InArena())
     {
-        if (!uVictim || uVictim == this || !uVictim->IsPlayer())
+        if (!uVictim || uVictim == this || uVictim->GetTypeId() != TYPEID_PLAYER)
             return false;
 
         if (GetBgTeamId() == uVictim->ToPlayer()->GetBgTeamId())
@@ -7750,7 +7749,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type)
 
     // remove FD and invisibility at all loots
     constexpr std::array<AuraType, 2> toRemove = {SPELL_AURA_MOD_INVISIBILITY, SPELL_AURA_FEIGN_DEATH};
-    for (auto const& aura : toRemove)
+    for (const auto& aura : toRemove)
     {
         RemoveAurasByType(aura);
     }
@@ -9267,7 +9266,7 @@ void Player::StopCastingCharm(Aura* except /*= nullptr*/)
         return;
     }
 
-    if (charm->IsCreature())
+    if (charm->GetTypeId() == TYPEID_UNIT)
     {
         if (charm->ToCreature()->HasUnitTypeMask(UNIT_MASK_PUPPET))
         {
@@ -9622,7 +9621,7 @@ void Player::CharmSpellInitialize()
     }
 
     uint8 addlist = 0;
-    if (!charm->IsPlayer())
+    if (charm->GetTypeId() != TYPEID_PLAYER)
     {
         //CreatureInfo const* cinfo = charm->ToCreature()->GetCreatureTemplate();
         //if (cinfo && cinfo->type == CREATURE_TYPE_DEMON && getClass() == CLASS_WARLOCK)
@@ -9638,7 +9637,7 @@ void Player::CharmSpellInitialize()
     data << uint16(0);
     data << uint32(0);
 
-    if (!charm->IsPlayer())
+    if (charm->GetTypeId() != TYPEID_PLAYER)
         data << uint8(charm->ToCreature()->GetReactState()) << uint8(charmInfo->GetCommandState()) << uint16(0);
     else
         data << uint32(0);
@@ -10656,7 +10655,7 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 c
         if (!bStore)
             AutoUnequipOffhandIfNeed();
 
-        if (pProto->HasFlag(ITEM_FLAG_ITEM_PURCHASE_RECORD) && crItem->ExtendedCost && pProto->GetMaxStackSize() == 1)
+        if (pProto->Flags & ITEM_FLAG_ITEM_PURCHASE_RECORD && crItem->ExtendedCost && pProto->GetMaxStackSize() == 1)
         {
             it->SetFlag(ITEM_FIELD_FLAGS, ITEM_FIELD_FLAG_REFUNDABLE);
             it->SetRefundRecipient(GetGUID().GetCounter());
@@ -10704,7 +10703,7 @@ bool Player::BuyItemFromVendorSlot(ObjectGuid vendorguid, uint32 vendorslot, uin
         return false;
     }
 
-    if (!IsGameMaster() && ((pProto->HasFlag2(ITEM_FLAG2_FACTION_HORDE) && GetTeamId(true) == TEAM_ALLIANCE) || (pProto->HasFlag2(ITEM_FLAG2_FACTION_ALLIANCE) && GetTeamId(true) == TEAM_HORDE)))
+    if (!IsGameMaster() && ((pProto->Flags2 & ITEM_FLAGS_EXTRA_HORDE_ONLY && GetTeamId(true) == TEAM_ALLIANCE) || (pProto->Flags2 & ITEM_FLAGS_EXTRA_ALLIANCE_ONLY && GetTeamId(true) == TEAM_HORDE)))
     {
         return false;
     }
@@ -10816,7 +10815,7 @@ bool Player::BuyItemFromVendorSlot(ObjectGuid vendorguid, uint32 vendorslot, uin
         price = pProto->BuyPrice * count; //it should not exceed MAX_MONEY_AMOUNT
 
         // reputation discount
-        price = uint32(std::floor(price * GetReputationPriceDiscount(creature)));
+        price = uint32(floor(price * GetReputationPriceDiscount(creature)));
 
         if (!HasEnoughMoney(price))
         {
@@ -11734,7 +11733,7 @@ void Player::SendInstanceResetWarning(uint32 mapid, Difficulty difficulty, uint3
 
 void Player::ApplyEquipCooldown(Item* pItem)
 {
-    if (pItem->GetTemplate()->HasFlag(ITEM_FLAG_NO_EQUIP_COOLDOWN))
+    if (pItem->HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_NO_EQUIP_COOLDOWN))
         return;
 
     for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
@@ -12633,7 +12632,7 @@ bool Player::isHonorOrXPTarget(Unit* victim) const
         return false;
     }
 
-    if (victim->IsCreature())
+    if (victim->GetTypeId() == TYPEID_UNIT)
     {
         if (victim->IsTotem() || victim->IsCritter() || victim->IsPet() || (victim->ToCreature()->GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_NO_XP))
         {
@@ -12695,7 +12694,7 @@ void Player::RewardPlayerAndGroupAtEvent(uint32 creature_id, WorldObject* pRewar
     if (!pRewardSource)
         return;
 
-    ObjectGuid creature_guid = (pRewardSource->IsCreature()) ? pRewardSource->GetGUID() : ObjectGuid::Empty;
+    ObjectGuid creature_guid = (pRewardSource->GetTypeId() == TYPEID_UNIT) ? pRewardSource->GetGUID() : ObjectGuid::Empty;
 
     // prepare data for near group iteration
     if (Group* group = GetGroup())
@@ -12829,7 +12828,7 @@ void Player::SetClientControl(Unit* target, bool allowMove, bool packetOnly /*= 
         SetMover(target);
 
     // Xinef: disable moving if target has disable move flag
-    if (!target->IsCreature())
+    if (target->GetTypeId() != TYPEID_UNIT)
         return;
 
     if (allowMove && target->HasUnitFlag(UNIT_FLAG_DISABLE_MOVE))
@@ -12866,12 +12865,12 @@ void Player::SetMover(Unit* target)
         LOG_INFO("misc", "Player::SetMover (B2) - {}, {}, {}, {}, {}, {}, {}, {}", target->GetGUID().ToString(), target->GetMapId(), target->GetInstanceId(), target->FindMap()->GetId(), target->IsInWorld() ? 1 : 0, target->IsDuringRemoveFromWorld() ? 1 : 0, (target->ToPlayer() && target->ToPlayer()->IsBeingTeleported() ? 1 : 0), target->isBeingLoaded() ? 1 : 0);
     }
     m_mover->m_movedByPlayer = nullptr;
-    if (m_mover->IsCreature())
+    if (m_mover->GetTypeId() == TYPEID_UNIT)
         m_mover->GetMotionMaster()->Initialize();
 
     m_mover = target;
     m_mover->m_movedByPlayer = this;
-    if (m_mover->IsCreature())
+    if (m_mover->GetTypeId() == TYPEID_UNIT)
         m_mover->GetMotionMaster()->Initialize();
 }
 
@@ -13116,7 +13115,7 @@ void Player::StopCastingBindSight(Aura* except /*= nullptr*/)
 {
     if (WorldObject* target = GetViewpoint())
     {
-        if (target->IsUnit())
+        if (target->isType(TYPEMASK_UNIT))
         {
             ((Unit*)target)->RemoveAurasByType(SPELL_AURA_BIND_SIGHT, GetGUID(), except);
             ((Unit*)target)->RemoveAurasByType(SPELL_AURA_MOD_POSSESS, GetGUID(), except);
@@ -13140,7 +13139,7 @@ void Player::SetViewpoint(WorldObject* target, bool apply)
         // farsight dynobj or puppet may be very far away
         UpdateVisibilityOf(target);
 
-        if (target->IsUnit() && !GetVehicle())
+        if (target->isType(TYPEMASK_UNIT) && !GetVehicle())
             ((Unit*)target)->AddPlayerToVision(this);
         SetSeer(target);
     }
@@ -13157,7 +13156,7 @@ void Player::SetViewpoint(WorldObject* target, bool apply)
             return;
         }
 
-        if (target->IsUnit() && !GetVehicle())
+        if (target->isType(TYPEMASK_UNIT) && !GetVehicle())
             static_cast<Unit*>(target)->RemovePlayerFromVision(this);
 
         // must immediately set seer back otherwise may crash
@@ -13777,7 +13776,7 @@ InventoryResult Player::CanEquipUniqueItem(Item* pItem, uint8 eslot, uint32 limi
 InventoryResult Player::CanEquipUniqueItem(ItemTemplate const* itemProto, uint8 except_slot, uint32 limit_count) const
 {
     // check unique-equipped on item
-    if (itemProto->HasFlag(ITEM_FLAG_UNIQUE_EQUIPPABLE))
+    if (itemProto->Flags & ITEM_FLAG_UNIQUE_EQUIPPABLE)
     {
         // there is an equip limit on this item
         if (HasItemOrGemWithIdEquipped(itemProto->ItemId, 1, except_slot))
@@ -15483,7 +15482,7 @@ void Player::SendRefundInfo(Item* item)
     // This function call unsets ITEM_FLAGS_REFUNDABLE if played time is over 2 hours.
     item->UpdatePlayedTime(this);
 
-    if (!item->IsRefundable())
+    if (!item->HasFlag(ITEM_FIELD_FLAGS, ITEM_FIELD_FLAG_REFUNDABLE))
     {
         LOG_DEBUG("entities.player.items", "Item refund: item not refundable!");
         return;
@@ -15551,7 +15550,7 @@ PetStable& Player::GetOrInitPetStable()
 
 void Player::RefundItem(Item* item)
 {
-    if (!item->IsRefundable())
+    if (!item->HasFlag(ITEM_FIELD_FLAGS, ITEM_FIELD_FLAG_REFUNDABLE))
     {
         LOG_DEBUG("entities.player.items", "Item refund: item not refundable!");
         return;

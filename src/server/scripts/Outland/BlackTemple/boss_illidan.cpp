@@ -1194,7 +1194,7 @@ class spell_illidan_demon_transform1_aura : public AuraScript
 
     bool Load() override
     {
-        return GetUnitOwner()->IsCreature();
+        return GetUnitOwner()->GetTypeId() == TYPEID_UNIT;
     }
 
     void OnPeriodic(AuraEffect const*  /*aurEff*/)
@@ -1222,7 +1222,7 @@ class spell_illidan_demon_transform2_aura : public AuraScript
 
     bool Load() override
     {
-        return GetUnitOwner()->IsCreature();
+        return GetUnitOwner()->GetTypeId() == TYPEID_UNIT;
     }
 
     void OnPeriodic(AuraEffect const* aurEff)
@@ -1313,7 +1313,7 @@ class spell_illidan_cage_trap : public SpellScript
 
     bool Load() override
     {
-        return GetCaster()->IsCreature();
+        return GetCaster()->GetTypeId() == TYPEID_UNIT;
     }
 
     void HandleScriptEffect(SpellEffIndex effIndex)

@@ -120,7 +120,7 @@ public:
                             immol->GetAI()->SetData(1, 1);
                             immol->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
                         }
-                        for (auto const& guid : HighborneSummoners)
+                        for (const auto& guid : HighborneSummoners)
                         {
                             if (Creature* summoner = instance->GetCreature(guid))
                             {

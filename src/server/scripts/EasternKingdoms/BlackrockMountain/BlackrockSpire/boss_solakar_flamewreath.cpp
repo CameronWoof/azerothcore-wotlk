@@ -83,7 +83,7 @@ public:
             }
 
             GetCreatureListWithEntryInGrid(nearbyWhelps, me, NPC_ROOKERY_WHELP, RANGE_WHELP_CALL_HELP);
-            for (auto const& whelp : nearbyWhelps)
+            for (const auto& whelp : nearbyWhelps)
             {
                 if (!whelp->IsInCombat())
                 {
@@ -106,7 +106,7 @@ public:
                             minDist = 50;
                             tempDist = 50;
                             me->GetGameObjectListWithEntryInGrid(nearbyEggs, GO_ROOKERY_EGG, 40);
-                            for (auto const& egg : nearbyEggs)
+                            for (const auto& egg : nearbyEggs)
                             {
                                 if (egg->isSpawned() && egg->getLootState() == GO_READY)
                                 {

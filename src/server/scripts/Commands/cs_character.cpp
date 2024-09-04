@@ -310,7 +310,7 @@ public:
                 if (target->GetUInt32Value(PLAYER_CHOSEN_TITLE) == titleInfo->bit_index)
                     activeStr = handler->GetAcoreString(LANG_ACTIVE);
 
-                std::string titleName = Acore::StringFormat(name, player->GetName());
+                std::string titleName = Acore::StringFormat(name, player->GetName().c_str());
 
                 // send title in "id (idx:idx) - [namedlink locale]" format
                 if (handler->GetSession())

@@ -35,7 +35,6 @@
 #include "Unit.h"
 #include "Vehicle.h"
 #include <array>
-#include <cmath>
 /*
  * Scripts for spells with SPELLFAMILY_GENERIC which cannot be included in AI script file
  * of creature using it or can't be bound to any player class.
@@ -136,7 +135,7 @@ class spell_the_flag_of_ownership : public SpellScript
     void HandleScript(SpellEffIndex /*effIndex*/)
     {
         Unit* caster = GetCaster();
-        if (!caster || !caster->IsPlayer())
+        if (!caster || caster->GetTypeId() != TYPEID_PLAYER)
             return;
         Player* target = GetHitPlayer();
         if (!target)
@@ -145,7 +144,7 @@ class spell_the_flag_of_ownership : public SpellScript
 
         LocaleConstant loc_idx = caster->ToPlayer()->GetSession()->GetSessionDbLocaleIndex();
         BroadcastText const* bct = sObjectMgr->GetBroadcastText(TEXT_FLAG_OF_OWNERSHIP);
-        std::string bctMsg = Acore::StringFormat(bct->GetText(loc_idx, caster->getGender()), caster->GetName(), target->GetName());
+        std::string bctMsg = Acore::StringFormat(bct->GetText(loc_idx, caster->getGender()), caster->GetName().c_str(), target->GetName().c_str());
         caster->Talk(bctMsg, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_TEXTEMOTE), target);
 
         haveTarget = true;
@@ -155,7 +154,7 @@ class spell_the_flag_of_ownership : public SpellScript
     {
         for( std::list<WorldObject*>::iterator itr = targets.begin(); itr != targets.end(); )
         {
-            if (!(*itr)->IsPlayer() || (*itr)->ToPlayer()->IsAlive())
+            if ((*itr)->GetTypeId() != TYPEID_PLAYER || (*itr)->ToPlayer()->IsAlive())
             {
                 targets.erase(itr);
                 itr = targets.begin();
@@ -1835,7 +1834,7 @@ class spell_gen_feign_death_all_flags : public AuraScript
         target->SetUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->SetUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
 
-        if (target->IsCreature())
+        if (target->GetTypeId() == TYPEID_UNIT)
             target->ToCreature()->SetReactState(REACT_PASSIVE);
     }
 
@@ -1846,7 +1845,7 @@ class spell_gen_feign_death_all_flags : public AuraScript
         target->RemoveUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->RemoveUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
 
-        if (target->IsCreature())
+        if (target->GetTypeId() == TYPEID_UNIT)
             target->ToCreature()->InitializeReactState();
     }
 
@@ -1870,7 +1869,7 @@ class spell_gen_feign_death_no_dyn_flag : public AuraScript
         target->SetUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->SetUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
 
-        if (target->IsCreature())
+        if (target->GetTypeId() == TYPEID_UNIT)
             target->ToCreature()->SetReactState(REACT_PASSIVE);
     }
 
@@ -1880,7 +1879,7 @@ class spell_gen_feign_death_no_dyn_flag : public AuraScript
         target->RemoveUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->RemoveUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
 
-        if (target->IsCreature())
+        if (target->GetTypeId() == TYPEID_UNIT)
             target->ToCreature()->InitializeReactState();
     }
 
@@ -1903,7 +1902,7 @@ class spell_gen_feign_death_no_prevent_emotes : public AuraScript
         target->SetUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->SetUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
 
-        if (target->IsCreature())
+        if (target->GetTypeId() == TYPEID_UNIT)
             target->ToCreature()->SetReactState(REACT_PASSIVE);
     }
 
@@ -1913,7 +1912,7 @@ class spell_gen_feign_death_no_prevent_emotes : public AuraScript
         target->RemoveUnitFlag2(UNIT_FLAG2_FEIGN_DEATH);
         target->RemoveUnitFlag(UNIT_FLAG_PREVENT_EMOTES_FROM_CHAT_TEXT);
 
-        if (target->IsCreature())
+        if (target->GetTypeId() == TYPEID_UNIT)
             target->ToCreature()->InitializeReactState();
     }
 
@@ -1944,7 +1943,7 @@ class spell_gen_teleporting : public SpellScript
     void HandleScript(SpellEffIndex /* effIndex */)
     {
         Unit* target = GetHitUnit();
-        if (!target->IsPlayer())
+        if (target->GetTypeId() != TYPEID_PLAYER)
             return;
 
         // return from top
@@ -2504,7 +2503,7 @@ class spell_gen_vehicle_scaling_aura: public AuraScript
 
     bool Load() override
     {
-        return GetCaster() && GetCaster()->IsPlayer() && GetOwner()->IsCreature();
+        return GetCaster() && GetCaster()->IsPlayer() && GetOwner()->GetTypeId() == TYPEID_UNIT;
     }
 
     void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
@@ -3285,7 +3284,7 @@ class spell_gen_summon_tournament_mount : public SpellScript
         return ValidateSpellInfo({ SPELL_LANCE_EQUIPPED });
     }
 
-    SpellCastResult CheckIfLanceEquipped()
+    SpellCastResult CheckIfLanceEquiped()
     {
         if (GetCaster()->IsInDisallowedMountForm())
             GetCaster()->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT);
@@ -3301,7 +3300,7 @@ class spell_gen_summon_tournament_mount : public SpellScript
 
     void Register() override
     {
-        OnCheckCast += SpellCheckCastFn(spell_gen_summon_tournament_mount::CheckIfLanceEquipped);
+        OnCheckCast += SpellCheckCastFn(spell_gen_summon_tournament_mount::CheckIfLanceEquiped);
     }
 };
 
@@ -3729,7 +3728,7 @@ class spell_gen_despawn_self : public SpellScript
 
     bool Load() override
     {
-        return GetCaster()->IsCreature();
+        return GetCaster()->GetTypeId() == TYPEID_UNIT;
     }
 
     void HandleDummy(SpellEffIndex effIndex)
@@ -4256,7 +4255,7 @@ class spell_gen_gift_of_naaru : public AuraScript
                 break;
         }
 
-        int32 healTick = std::floor(heal / aurEff->GetTotalTicks());
+        int32 healTick = floor(heal / aurEff->GetTotalTicks());
         amount += int32(std::max(healTick, 0));
     }
 

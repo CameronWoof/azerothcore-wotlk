@@ -354,7 +354,7 @@ public:
 
         void IsSummonedBy(WorldObject* summoner) override
         {
-            if (!summoner->IsPlayer())
+            if (summoner->GetTypeId() != TYPEID_PLAYER)
             {
                 return;
             }
@@ -392,7 +392,7 @@ public:
 
         void PassengerBoarded(Unit* passenger, int8 /*seatid*/, bool add) override
         {
-            if (!passenger->IsPlayer())
+            if (passenger->GetTypeId() != TYPEID_PLAYER)
                 return;
 
             if (add)

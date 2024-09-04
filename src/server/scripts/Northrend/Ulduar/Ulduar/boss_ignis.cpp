@@ -542,7 +542,7 @@ public:
 
     bool OnCheck(Player*  /*player*/, Unit* target, uint32 /*criteria_id*/) override
     {
-        if (!target || !target->IsCreature())
+        if (!target || target->GetTypeId() != TYPEID_UNIT)
             return false;
         return !!target->ToCreature()->AI()->GetData(1337);
     }

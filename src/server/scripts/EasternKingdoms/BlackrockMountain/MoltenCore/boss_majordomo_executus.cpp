@@ -587,7 +587,7 @@ class spell_hate_to_zero : public SpellScript
 
     bool Load() override
     {
-        return GetCaster()->IsCreature();
+        return GetCaster()->GetTypeId() == TYPEID_UNIT;
     }
 
     void HandleHit(SpellEffIndex /*effIndex*/)

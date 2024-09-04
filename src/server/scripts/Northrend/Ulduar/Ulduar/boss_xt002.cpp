@@ -427,7 +427,7 @@ public:
         {
             summons.Summon(cr);
             if (Unit* owner = me->GetVehicleBase())
-                if (owner->IsCreature())
+                if (owner->GetTypeId() == TYPEID_UNIT)
                     owner->ToCreature()->AI()->JustSummoned(cr);
         }
         void DamageTaken(Unit*, uint32& damage, DamageEffectType, SpellSchoolMask) override

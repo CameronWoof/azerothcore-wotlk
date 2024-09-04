@@ -81,7 +81,7 @@ bool ThreatCalcHelper::isValidProcess(Unit* hatedUnit, Unit* hatingUnit, SpellIn
     if (threatSpell && threatSpell->HasAttribute(SPELL_ATTR1_NO_THREAT))
         return false;
 
-    ASSERT(hatingUnit->IsCreature());
+    ASSERT(hatingUnit->GetTypeId() == TYPEID_UNIT);
 
     return true;
 }
@@ -190,7 +190,7 @@ void HostileReference::updateOnlineStatus()
     // target is no player or not gamemaster
     // target is not in flight
     if (isValid()
-            && (!getTarget()->IsPlayer() || !getTarget()->ToPlayer()->IsGameMaster())
+            && (getTarget()->GetTypeId() != TYPEID_PLAYER || !getTarget()->ToPlayer()->IsGameMaster())
             && !getTarget()->IsInFlight()
             && getTarget()->IsInMap(GetSourceUnit())
             && getTarget()->InSamePhase(GetSourceUnit())

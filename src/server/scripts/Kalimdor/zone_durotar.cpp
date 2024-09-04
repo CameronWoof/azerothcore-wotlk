@@ -180,7 +180,7 @@ public:
 
         void KilledUnit(Unit* victim) override
         {
-            if (!victim->IsCreature() || !victim->IsSummon())
+            if (victim->GetTypeId() != TYPEID_UNIT || !victim->IsSummon())
                 return;
 
             if (Unit* vehSummoner = victim->ToTempSummon()->GetSummonerUnit())

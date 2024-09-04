@@ -401,14 +401,14 @@ public:
                                 pile->SetLootState(GO_READY);
                                 pile->Respawn();
                             }
-                            for (auto const& circleGUID : go_urokOgreCirles)
+                            for (const auto& circleGUID : go_urokOgreCirles)
                             {
                                 if (GameObject* circle = instance->GetGameObject(circleGUID))
                                 {
                                     circle->Delete();
                                 }
                             }
-                            for (auto const& mobGUID : UrokMobs)
+                            for (const auto& mobGUID : UrokMobs)
                             {
                                 if (Creature* mob = instance->GetCreature(mobGUID))
                                 {

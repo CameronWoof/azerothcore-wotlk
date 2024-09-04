@@ -155,7 +155,7 @@ struct boss_priestess_delrissa : public ScriptedAI
 
     void KilledUnit(Unit* victim) override
     {
-        if (!victim->IsPlayer())
+        if (victim->GetTypeId() != TYPEID_PLAYER)
             return;
 
         if (PlayersKilled < SAY_DEATH)

@@ -29,7 +29,7 @@ PlayerSocial::PlayerSocial(): m_playerGUID() { }
 uint32 PlayerSocial::GetNumberOfSocialsWithFlag(SocialFlag flag) const
 {
     uint32 counter = 0;
-    for (auto const& itr : m_playerSocialMap)
+    for (const auto& itr : m_playerSocialMap)
     {
         if ((itr.second.Flags & flag) != 0)
             ++counter;
@@ -178,7 +178,7 @@ void PlayerSocial::SendSocialList(Player* player, uint32 flags)
 
 bool PlayerSocial::_checkContact(ObjectGuid guid, SocialFlag flags) const
 {
-    auto const& itr = m_playerSocialMap.find(guid);
+    const auto& itr = m_playerSocialMap.find(guid);
     if (itr != m_playerSocialMap.end())
         return (itr->second.Flags & flags) != 0;
 

@@ -337,7 +337,7 @@ public:
             return false;
 
         Unit* unit = handler->getSelectedUnit();
-        if (!unit || !unit->IsCreature())
+        if (!unit || unit->GetTypeId() != TYPEID_UNIT)
         {
             handler->SendErrorMessage(LANG_SELECT_CREATURE);
             return false;

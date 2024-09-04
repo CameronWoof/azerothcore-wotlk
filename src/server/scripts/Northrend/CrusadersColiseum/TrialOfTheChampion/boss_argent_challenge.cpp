@@ -765,7 +765,7 @@ class spell_toc5_light_rain : public SpellScript
     {
         for( std::list<WorldObject*>::iterator itr = targets.begin(); itr != targets.end(); )
         {
-            if ((*itr)->IsCreature())
+            if ((*itr)->GetTypeId() == TYPEID_UNIT)
                 if ((*itr)->ToCreature()->GetEntry() == NPC_FOUNTAIN_OF_LIGHT)
                 {
                     targets.erase(itr);

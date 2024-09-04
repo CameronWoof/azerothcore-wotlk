@@ -1088,7 +1088,7 @@ class spell_kiljaeden_sinister_reflection_clone : public SpellScript
         WorldObject* target = targets.front();
 
         targets.clear();
-        if (target && target->IsCreature())
+        if (target && target->GetTypeId() == TYPEID_UNIT)
         {
             target->ToCreature()->AI()->SetData(1, GetCaster()->getClass());
             targets.push_back(target);
@@ -1133,7 +1133,7 @@ class spell_kiljaeden_darkness_aura : public AuraScript
 
     void HandleRemove(AuraEffect const*  /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (GetUnitOwner()->IsCreature())
+        if (GetUnitOwner()->GetTypeId() == TYPEID_UNIT)
             GetUnitOwner()->ToCreature()->AI()->DoAction(ACTION_NO_KILL_TALK);
 
         GetUnitOwner()->CastSpell(GetUnitOwner(), SPELL_DARKNESS_OF_A_THOUSAND_SOULS_DAMAGE, true);

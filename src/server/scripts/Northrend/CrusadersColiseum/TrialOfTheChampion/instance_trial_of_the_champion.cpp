@@ -1156,7 +1156,7 @@ public:
                                     {
                                         NPC_BlackKnightGUID = bk->GetGUID();
                                         bk->SendMovementFlagUpdate(); // put him on vehicle visually
-                                        if( bk->IsCreature() )
+                                        if( bk->GetTypeId() == TYPEID_UNIT )
                                             bk->ToCreature()->SetReactState(REACT_PASSIVE);
                                     }
 

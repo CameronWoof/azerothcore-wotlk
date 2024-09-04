@@ -307,7 +307,7 @@ struct boss_taldaram : public BossAI
 
     void KilledUnit(Unit* victim) override
     {
-        if (!victim->IsPlayer())
+        if (victim->GetTypeId() != TYPEID_PLAYER)
         {
             return;
         }

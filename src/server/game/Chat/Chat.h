@@ -74,13 +74,13 @@ public:
     void SendNotification(uint32 strId, Args&&... args)
     {
         if (HasSession())
-            SendNotification(Acore::StringFormat(GetAcoreString(strId), std::forward<Args>(args)...));
+            SendNotification(Acore::StringFormatFmt(GetAcoreString(strId), std::forward<Args>(args)...));
     }
     template<typename... Args>
     void SendNotification(char const* fmt, Args&&... args)
     {
         if (HasSession())
-            SendNotification(Acore::StringFormat(fmt, std::forward<Args>(args)...));
+            SendNotification(Acore::StringFormatFmt(fmt, std::forward<Args>(args)...));
     }
 
     void SendGMText(std::string_view str);
@@ -91,7 +91,7 @@ public:
         DoForAllValidSessions([&](Player* player)
             {
                 m_session = player->GetSession();
-                SendGMText(Acore::StringFormat(GetAcoreString(strId), std::forward<Args>(args)...));
+                SendGMText(Acore::StringFormatFmt(GetAcoreString(strId), std::forward<Args>(args)...));
             });
     }
     template<typename... Args>
@@ -101,7 +101,7 @@ public:
         DoForAllValidSessions([&](Player* player)
             {
                 m_session = player->GetSession();
-                SendGMText(Acore::StringFormat(fmt, std::forward<Args>(args)...));
+                SendGMText(Acore::StringFormatFmt(fmt, std::forward<Args>(args)...));
             });
     }
 
@@ -113,7 +113,7 @@ public:
         DoForAllValidSessions([&](Player* player)
             {
                 m_session = player->GetSession();
-                SendWorldText(Acore::StringFormat(GetAcoreString(strId), std::forward<Args>(args)...));
+                SendWorldText(Acore::StringFormatFmt(GetAcoreString(strId), std::forward<Args>(args)...));
             });
     }
     template<typename... Args>
@@ -123,7 +123,7 @@ public:
         DoForAllValidSessions([&](Player* player)
             {
                 m_session = player->GetSession();
-                SendWorldText(Acore::StringFormat(fmt, std::forward<Args>(args)...));
+                SendWorldText(Acore::StringFormatFmt(fmt, std::forward<Args>(args)...));
             });
     }
 
@@ -135,7 +135,7 @@ public:
         DoForAllValidSessions([&](Player* player)
             {
                 m_session = player->GetSession();
-                SendWorldTextOptional(Acore::StringFormat(GetAcoreString(strId), std::forward<Args>(args)...), flag);
+                SendWorldTextOptional(Acore::StringFormatFmt(GetAcoreString(strId), std::forward<Args>(args)...), flag);
             });
     }
     template<typename... Args>
@@ -145,7 +145,7 @@ public:
         DoForAllValidSessions([&](Player* player)
             {
                 m_session = player->GetSession();
-                SendWorldTextOptional(Acore::StringFormat(fmt, std::forward<Args>(args)...), flag);
+                SendWorldTextOptional(Acore::StringFormatFmt(fmt, std::forward<Args>(args)...), flag);
             });
     }
 
@@ -160,7 +160,7 @@ public:
     void PSendSysMessage(char const* fmt, Args&&... args)
     {
         if (HasSession())
-            SendSysMessage(Acore::StringFormat(fmt, std::forward<Args>(args)...));
+            SendSysMessage(Acore::StringFormatFmt(fmt, std::forward<Args>(args)...));
     }
 
     template<typename... Args>
@@ -173,7 +173,7 @@ public:
     template<typename... Args>
     std::string PGetParseString(uint32 entry, Args&&... args) const
     {
-        return Acore::StringFormat(GetAcoreString(entry), std::forward<Args>(args)...);
+        return Acore::StringFormatFmt(GetAcoreString(entry), std::forward<Args>(args)...);
     }
 
     std::string const* GetModuleString(std::string module, uint32 id) const;
@@ -188,7 +188,7 @@ public:
     template<typename... Args>
     std::string PGetParseModuleString(std::string module, uint32 id, Args&&... args) const
     {
-        return Acore::StringFormat(GetModuleString(module, id)->c_str(), std::forward<Args>(args)...);
+        return Acore::StringFormatFmt(GetModuleString(module, id)->c_str(), std::forward<Args>(args)...);
     }
 
     void SendErrorMessage(uint32 entry);

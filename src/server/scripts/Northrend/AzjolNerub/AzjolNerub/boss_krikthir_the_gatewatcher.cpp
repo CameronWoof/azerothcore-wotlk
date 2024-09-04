@@ -95,7 +95,7 @@ public:
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (!who->IsPlayer())
+            if (who->GetTypeId() != TYPEID_PLAYER)
                 return;
 
             if (!_initTalk)

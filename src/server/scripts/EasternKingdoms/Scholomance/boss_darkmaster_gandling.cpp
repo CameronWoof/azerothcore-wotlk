@@ -389,7 +389,7 @@ public:
 
         void IsSummonedBy(WorldObject* summoner) override
         {
-            if (!summoner->IsCreature())
+            if (summoner->GetTypeId() != TYPEID_UNIT)
             {
                 return;
             }

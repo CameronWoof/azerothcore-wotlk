@@ -322,7 +322,7 @@ void OPvPCapturePointHP::HandlePlayerLeave(Player* player)
 
 void OutdoorPvPHP::HandleKillImpl(Player* player, Unit* killed)
 {
-    if (!killed->IsPlayer())
+    if (killed->GetTypeId() != TYPEID_PLAYER)
         return;
 
     if (player->GetTeamId() == TEAM_ALLIANCE && killed->ToPlayer()->GetTeamId() != TEAM_ALLIANCE)

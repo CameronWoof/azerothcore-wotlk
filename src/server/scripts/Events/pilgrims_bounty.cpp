@@ -571,7 +571,7 @@ class spell_pilgrims_bounty_serve_generic : public AuraScript
     void OnAuraRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         Unit* target = GetTarget();
-        if (target->IsCreature())
+        if (target->GetTypeId() == TYPEID_UNIT)
             target->ToCreature()->AI()->DoAction(GetSpellInfo()->Id);
     }
 
